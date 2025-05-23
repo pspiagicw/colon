@@ -23,6 +23,7 @@ enum class TokenType {
     TOKEN_ASSIGN,
     TOKEN_EQ,
     TOKEN_NEQ,
+    TOKEN_BANG,
 
     TOKEN_DOT,
     TOKEN_COMMA,
@@ -51,6 +52,7 @@ enum class TokenType {
     TOKEN_INT,
     TOKEN_DOUBLE,
 
+    TOKEN_ILLEGAL,
     TOKEN_EOF,
 };
 

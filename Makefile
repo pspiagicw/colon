@@ -1,4 +1,4 @@
-CFLAGS := -std=c++17 -Wall -Wextra -pedantic -Iinclude
+CFLAGS := -std=c++20 -Wall -Wextra -pedantic -Iinclude
 CC := clang++
 SOURCE_FILES := src/lexer.cpp src/token.cpp
 TEST_FILES := tests/lexer_test.cpp tests/simple_test.cpp

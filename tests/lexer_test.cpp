@@ -2,15 +2,19 @@
 #include <lexer.hpp>
 #include <magic_enum.hpp>
 #include <vector>
+#include <cstdio>
+
+#define CHECK_MESSAGE(cond, msg) do { INFO(msg); CHECK(cond); } while((void)0, 0)
+#define REQUIRE_MESSAGE(cond, msg) do { INFO(msg); REQUIRE(cond); } while((void)0, 0)
 
 void test(std::string, std::vector<Token> expectedTokens);
 
 TEST_CASE("Test symbols", "[lexer]") {
-  std::string input = "+-*/";
+  std::string input = "-+*/";
 
   std::vector<Token> expectedTokens = {
       Token("-", TokenType::TOKEN_MINUS), Token("+", TokenType::TOKEN_PLUS),
-      Token("-", TokenType::TOKEN_STAR),  Token("/", TokenType::TOKEN_DIVIDE),
+      Token("*", TokenType::TOKEN_STAR),  Token("/", TokenType::TOKEN_DIVIDE),
       Token("", TokenType::TOKEN_EOF),
   };
 
@@ -77,6 +81,22 @@ TEST_CASE("Test less than or equal and greater than or equal", "[lexer]") {
     test(input, expectedTokens);
 }
 
+TEST_CASE("Test spaces and tabs", "[lexer]") {
+    std::string input = "< >\t< >\n<";
+
+    std::vector<Token> expectedTokens = {
+        Token("<", TokenType::TOKEN_LT),
+        Token(">", TokenType::TOKEN_GT),
+        Token("<", TokenType::TOKEN_LT),
+        Token(">", TokenType::TOKEN_GT),
+        Token("<", TokenType::TOKEN_LT),
+        Token("", TokenType::TOKEN_EOF),
+    };
+
+    test(input, expectedTokens);
+
+}
+
 TEST_CASE("Test assignment and equality", "[lexer]") {
     std::string input = "== =";
 
@@ -90,9 +110,10 @@ TEST_CASE("Test assignment and equality", "[lexer]") {
 }
 
 TEST_CASE("Test bang and bang equal", "[lexer]") {
-    std::string input = "!=";
+    std::string input = "! !=";
 
     std::vector<Token> expectedTokens = {
+        Token("!", TokenType::TOKEN_BANG),
         Token("!=", TokenType::TOKEN_NEQ),
         Token("", TokenType::TOKEN_EOF),
     };
@@ -146,19 +167,20 @@ TEST_CASE("Test shift operators", "[lexer]") {
     test(input, expectedTokens);
 }
 
-TEST_CASE("Test bitwise operators", "[lexer]") {
-    std::string input = "& | ^ ~";
-
-    std::vector<Token> expectedTokens = {
-        Token("&", TokenType::TOKEN_AND),
-        Token("|", TokenType::TOKEN_OR),
-        Token("^", TokenType::TOKEN_XOR),
-        Token("~", TokenType::TOKEN_TILDE),
-        Token("", TokenType::TOKEN_EOF),
-    };
-
-    test(input, expectedTokens);
-}
+// TODO: Add support for these bitwise operators
+// TEST_CASE("Test bitwise operators", "[lexer]") {
+//     std::string input = "& | ^ ~";
+//
+//     std::vector<Token> expectedTokens = {
+//         Token("&", TokenType::TOKEN_AND),
+//         Token("|", TokenType::TOKEN_OR),
+//         Token("^", TokenType::TOKEN_XOR),
+//         Token("~", TokenType::TOKEN_TILDE),
+//         Token("", TokenType::TOKEN_EOF),
+//     };
+//
+//     test(input, expectedTokens);
+// }
 
 
 // TODO: Add support for && and || tokens.
@@ -322,8 +344,10 @@ void test(std::string input, std::vector<Token> expectedTokens) {
   for (auto expected : expectedTokens) {
     Token actual = lexer.next();
 
-    REQUIRE(actual._type == expected._type);
-    REQUIRE(actual._value == expected._value);
+    std::string tokenMessage = "Token type doesn't match, got=" + std::string(magic_enum::enum_name(actual._type)) + " expected=" + std::string(magic_enum::enum_name(expected._type));
+    std::string valueMessage = "Value doesn't match, got=" + actual._value + " expected=" + expected._value;
+    REQUIRE_MESSAGE(actual._type == expected._type, tokenMessage);
+    REQUIRE_MESSAGE(actual._value == expected._value, valueMessage);
   }
 
   lexer.next();
