@@ -18,6 +18,13 @@ class Lexer {
         void advance();
         char peek();
         void whitespace();
+        std::string extractString();
+        std::string extractChar();
+        std::string extractIdent();
+        std::string extractNumber();
+        Token skipComment();
+        TokenType predictType(std::string);
+        char current();
         
 };
 
