@@ -104,14 +104,12 @@ std::string Lexer::extractIdent() {
 
     int startPoint = _curPos;
 
-    char _cur = current();
 
-    while(!_isEOF && ((std::isalpha(_cur) || std::isdigit(_cur)) && _cur != ' ')) {
+    while(!_isEOF && ((std::isalpha(peek()) || std::isdigit(peek())) && peek() != ' ')) {
         advance();
-        _cur = current();
     }
 
-    int endPoint = _curPos;
+    int endPoint = _curPos + 1;
 
     int width = endPoint - startPoint;
 
@@ -123,14 +121,12 @@ std::string Lexer::extractNumber() {
 
     int startPoint = _curPos;
 
-    char _cur = current();
 
-    while(!_isEOF && (std::isdigit(_cur) || _cur == '.')) {
+    while(!_isEOF && (std::isdigit(peek()) || peek() == '.')) {
         advance();
-        _cur = current();
     }
 
-    int endPoint = _curPos;
+    int endPoint = _curPos + 1;
 
     int width = endPoint - startPoint;
 

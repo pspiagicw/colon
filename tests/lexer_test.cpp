@@ -339,6 +339,32 @@ TEST_CASE("Test multi-line comment skipping", "[lexer]") {
     };
 
     test(input, expectedTokens);
+
+}
+
+TEST_CASE("Test immediate token recognition with numbers.", "[lexer]") {
+
+    std::string input = "3+5";
+
+    std::vector<Token> expectedTokens = {
+        Token("3", TokenType::TOKEN_INT),
+        Token("+", TokenType::TOKEN_PLUS),
+        Token("5", TokenType::TOKEN_INT),
+    };
+
+    test(input, expectedTokens);
+}
+
+TEST_CASE("Test immediate token recognition with identifiers", "[lexer]") {
+    std::string input = "ident1+ident2";
+
+    std::vector<Token> expectedTokens = {
+        Token("ident1", TokenType::TOKEN_IDENTIFIER),
+        Token("+", TokenType::TOKEN_PLUS),
+        Token("ident2", TokenType::TOKEN_IDENTIFIER),
+    };
+
+    test(input, expectedTokens);
 }
 
 

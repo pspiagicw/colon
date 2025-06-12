@@ -61,4 +61,5 @@ class Token {
         Token(std::string value, TokenType type);
         TokenType _type;
         std::string _value;
+        std::string string();
 };
