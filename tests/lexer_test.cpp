@@ -230,13 +230,14 @@ TEST_CASE("Test identifiers", "[lexer]") {
     test(input, expectedTokens);
 }
 TEST_CASE("Test keywords", "[lexer]") {
-    std::string input = "if else for while";
+    std::string input = "if else for while let";
 
     std::vector<Token> expectedTokens = {
         Token("if", TokenType::TOKEN_IF),
         Token("else", TokenType::TOKEN_ELSE),
         Token("for", TokenType::TOKEN_FOR),
         Token("while", TokenType::TOKEN_WHILE),
+        Token("let", TokenType::TOKEN_LET),
         Token("", TokenType::TOKEN_EOF),
     };
 

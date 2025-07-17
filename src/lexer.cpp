@@ -1,8 +1,7 @@
+#include <algorithm>
 #include <cassert>
 #include <lexer.hpp>
-#include <algorithm>
 #include <stdexcept>
-
 
 Lexer::Lexer(std::string input) {
   _input = input;
@@ -34,10 +33,10 @@ char Lexer::peek() {
 }
 
 char Lexer::current() {
-    if(_isEOF) {
-        return '\0';
-    }
-    return _input[_curPos];
+  if (_isEOF) {
+    return '\0';
+  }
+  return _input[_curPos];
 }
 
 void Lexer::whitespace() {
@@ -49,38 +48,39 @@ void Lexer::whitespace() {
 }
 
 Token Lexer::skipComment() {
-    if(current() == '/') {
-        while(!_isEOF && current() != '\n') {
-            advance();
-        }
-        return next();
-    } else if (current() == '*') {
-        advance(); // skip over the '*'
-        while(!_isEOF && current() != '*' && peek() != '/') {
-            advance();
-        }
-        advance(); // skip over the '/'
-        return next();
-    } else {
-        throw std::runtime_error("Fatal error: tried skipping comment without comment symbol!");
+  if (current() == '/') {
+    while (!_isEOF && current() != '\n') {
+      advance();
     }
+    return next();
+  } else if (current() == '*') {
+    advance(); // skip over the '*'
+    while (!_isEOF && current() != '*' && peek() != '/') {
+      advance();
+    }
+    advance(); // skip over the '/'
+    return next();
+  } else {
+    throw std::runtime_error(
+        "Fatal error: tried skipping comment without comment symbol!");
+  }
 }
 
 std::string Lexer::extractChar() {
-    assert(current() == '\'');
+  assert(current() == '\'');
+  advance();
+
+  int startPoint = _curPos;
+  while (!_isEOF && current() != '\'') {
     advance();
+  }
 
-    int startPoint = _curPos;
-    while(!_isEOF && current() != '\'') {
-        advance();
-    }
+  int endPoint = _curPos;
 
-    int endPoint = _curPos;
+  int width = endPoint - startPoint;
 
-    int width = endPoint - startPoint;
-
-    // substring function takes width, not start and endPoint;
-    return _input.substr(startPoint, width);
+  // substring function takes width, not start and endPoint;
+  return _input.substr(startPoint, width);
 }
 
 std::string Lexer::extractString() {
@@ -100,64 +100,64 @@ std::string Lexer::extractString() {
 }
 
 std::string Lexer::extractIdent() {
-    assert(std::isalpha(current()));
+  assert(std::isalpha(current()));
 
-    int startPoint = _curPos;
+  int startPoint = _curPos;
 
+  while (!_isEOF &&
+         ((std::isalpha(peek()) || std::isdigit(peek())) && peek() != ' ')) {
+    advance();
+  }
 
-    while(!_isEOF && ((std::isalpha(peek()) || std::isdigit(peek())) && peek() != ' ')) {
-        advance();
-    }
+  int endPoint = _curPos + 1;
 
-    int endPoint = _curPos + 1;
+  int width = endPoint - startPoint;
 
-    int width = endPoint - startPoint;
-
-    return _input.substr(startPoint, width);
+  return _input.substr(startPoint, width);
 }
 
 std::string Lexer::extractNumber() {
-    assert(std::isdigit(current()));
+  assert(std::isdigit(current()));
 
-    int startPoint = _curPos;
+  int startPoint = _curPos;
 
+  while (!_isEOF && (std::isdigit(peek()) || peek() == '.')) {
+    advance();
+  }
 
-    while(!_isEOF && (std::isdigit(peek()) || peek() == '.')) {
-        advance();
-    }
+  int endPoint = _curPos + 1;
 
-    int endPoint = _curPos + 1;
+  int width = endPoint - startPoint;
 
-    int width = endPoint - startPoint;
-
-    return _input.substr(startPoint, width);
-
+  return _input.substr(startPoint, width);
 }
 
 TokenType Lexer::predictType(std::string value) {
-    if(value == "if") {
-        return TokenType::TOKEN_IF;
-    } else if(value == "else") {
-        return TokenType::TOKEN_ELSE;
-    } else if(value == "for") {
-        return TokenType::TOKEN_FOR;
-    } else if(value == "while") {
-        return TokenType::TOKEN_WHILE;
+  if (value == "if") {
+    return TokenType::TOKEN_IF;
+  } else if (value == "else") {
+    return TokenType::TOKEN_ELSE;
+  } else if (value == "for") {
+    return TokenType::TOKEN_FOR;
+  } else if (value == "while") {
+    return TokenType::TOKEN_WHILE;
+  } else if (value == "let") {
+    return TokenType::TOKEN_LET;
+  }
+
+  if (std::isdigit(value[0])) {
+    int count = std::count(value.begin(), value.end(), '.');
+
+    if (count == 0) {
+      return TokenType::TOKEN_INT;
+    } else if (count == 1) {
+      return TokenType::TOKEN_DOUBLE;
+    } else {
+      return TokenType::TOKEN_ILLEGAL;
     }
+  }
 
-    if(std::isdigit(value[0])) {
-        int count = std::count(value.begin(), value.end(), '.');
-
-        if(count == 0) {
-            return TokenType::TOKEN_INT;
-        } else if (count == 1) {
-            return TokenType::TOKEN_DOUBLE;
-        } else {
-            return TokenType::TOKEN_ILLEGAL;
-        }
-    }
-
-    return TokenType::TOKEN_IDENTIFIER;
+  return TokenType::TOKEN_IDENTIFIER;
 }
 Token Lexer::next() {
   advance();
@@ -177,14 +177,14 @@ Token Lexer::next() {
     return Token("*", TokenType::TOKEN_STAR);
     break;
   case '/':
-    if(peek() == '/') {
-        // skip over the first /
-        advance();
-        return skipComment();
+    if (peek() == '/') {
+      // skip over the first /
+      advance();
+      return skipComment();
     } else if (peek() == '*') {
-        // skip over the first /
-        advance();
-        return skipComment();
+      // skip over the first /
+      advance();
+      return skipComment();
     }
     return Token("/", TokenType::TOKEN_DIVIDE);
     break;
@@ -262,14 +262,14 @@ Token Lexer::next() {
     break;
   }
   default:
-    if(std::isalpha(_cur)) {
-        std::string value = extractIdent();
-        TokenType type = predictType(value);
-        return Token(value, type);
-    } else if(std::isdigit(_cur)) {
-        std::string value = extractNumber();
-        TokenType type = predictType(value);
-        return Token(value, type);
+    if (std::isalpha(_cur)) {
+      std::string value = extractIdent();
+      TokenType type = predictType(value);
+      return Token(value, type);
+    } else if (std::isdigit(_cur)) {
+      std::string value = extractNumber();
+      TokenType type = predictType(value);
+      return Token(value, type);
     }
     return Token(std::to_string(_cur), TokenType::TOKEN_ILLEGAL);
     break;

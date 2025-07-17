@@ -48,6 +48,7 @@ enum class TokenType {
     TOKEN_ELSE,
     TOKEN_FOR,
     TOKEN_WHILE,
+    TOKEN_LET,
 
     TOKEN_INT,
     TOKEN_DOUBLE,
