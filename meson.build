@@ -12,7 +12,7 @@ inc = include_directories('include')
 # Source files
 source_files = ['src/lexer.cpp', 'src/token.cpp']
 main_file = ['src/main.cpp']
-test_files = ['tests/lexer_test.cpp', 'tests/simple_test.cpp']
+test_files = ['tests/lexer_test.cpp', 'tests/simple_test.cpp', 'tests/parser_test.cpp']
 
 executable('colon', source_files + main_file,
   include_directories: inc,
